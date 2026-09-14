@@ -22,6 +22,8 @@ class CameraUpdate(BaseModel):
     name: str | None = None
     is_active: bool | None = None
     target_fps: int | None = None
+    source_type: str | None = None
+    source_uri: str | None = None
 
 
 class CameraOut(CameraBase):

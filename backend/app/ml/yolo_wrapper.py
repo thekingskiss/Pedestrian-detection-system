@@ -91,20 +91,23 @@ class YoloPedestrianDetector:
         self._model = None  # lazily loaded; see load()
 
     def load(self) -> None:
-        # STUB: real implementation loads `ultralytics.YOLO(self.weights_path)`.
-        self._model = f"loaded:{self.weights_path}"
+        from ultralytics import YOLO
+
+        self._model = YOLO(self.weights_path)
 
     def predict(self, image: np.ndarray, confidence_threshold: float) -> list[Detection]:
         """
         FR-03/FR-04: runs pedestrian detection + confidence filtering.
-
-        STUB: returns an empty list. A real call here does:
-            results = self._model.predict(image, conf=confidence_threshold, classes=[0])[0]
-            return [
-                Detection(*box.xyxyn[0].tolist(), confidence=float(box.conf[0]))
-                for box in results.boxes
-            ]
         """
         if self._model is None:
             self.load()
-        return []
+
+        results = self._model.predict(image, conf=confidence_threshold, verbose=False)[0]
+        return [
+            Detection(
+                *box.xyxyn[0].tolist(),
+                confidence=float(box.conf[0]),
+                class_id=int(box.cls[0]),
+            )
+            for box in results.boxes
+        ]
