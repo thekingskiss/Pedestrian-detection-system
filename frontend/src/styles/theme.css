@@ -1,0 +1,379 @@
+/*
+  Visual identity: a nighttime traffic-monitoring console — the kind of
+  screen a traffic-safety officer would actually watch. Dark asphalt base,
+  hazard-amber as the single accent (the one color road signage already
+  trains people to read as "pay attention"), signal-red reserved strictly
+  for CRITICAL alerts so it never gets diluted into decoration.
+
+  Signature element: bounding-box corner brackets ([ ]) on camera/detection
+  cards, echoing the YOLO bounding boxes the system itself draws — chrome
+  that comes from the subject rather than being applied to it.
+*/
+
+:root {
+  --asphalt-950: #0d1012;
+  --asphalt-900: #14181b;
+  --asphalt-800: #1c2226;
+  --asphalt-700: #2a3237;
+  --asphalt-600: #3d474d;
+  --slate-400: #7c8b93;
+  --slate-200: #c3ccd1;
+  --fog-50: #eef1f2;
+
+  --amber-500: #f2a93b;
+  --amber-400: #f7c26b;
+  --amber-glow: rgba(242, 169, 59, 0.18);
+
+  --signal-red: #e5484d;
+  --signal-red-glow: rgba(229, 72, 77, 0.18);
+  --caution-amber: var(--amber-500);
+  --safe-green: #4fae7a;
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --radius: 3px;
+  --border: 1px solid var(--asphalt-700);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--asphalt-950);
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(242, 169, 59, 0.05), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(229, 72, 77, 0.04), transparent 45%);
+  color: var(--fog-50);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+a {
+  color: var(--amber-400);
+}
+
+/* --- App shell ------------------------------------------------------------- */
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--asphalt-900);
+  border-right: var(--border);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-brand {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--fog-50);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sidebar-brand .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber-500);
+  box-shadow: 0 0 8px var(--amber-glow);
+  display: inline-block;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 9px 10px;
+  border-radius: var(--radius);
+  color: var(--slate-400);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.sidebar-link:hover {
+  background: var(--asphalt-800);
+  color: var(--fog-50);
+}
+
+.sidebar-link.active {
+  background: var(--asphalt-800);
+  color: var(--amber-400);
+  box-shadow: inset 2px 0 0 var(--amber-500);
+}
+
+.main {
+  padding: 28px 36px;
+  overflow-y: auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--amber-500);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.page-title {
+  font-size: 22px;
+}
+
+/* --- Bounding-box card chrome (signature element) --------------------------- */
+
+.bbox-card {
+  position: relative;
+  background: var(--asphalt-900);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.bbox-card::before,
+.bbox-card::after,
+.bbox-card .corner-tl,
+.bbox-card .corner-br {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+.bbox-card::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--amber-500);
+  border-left: 2px solid var(--amber-500);
+}
+
+.bbox-card::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--amber-500);
+  border-right: 2px solid var(--amber-500);
+}
+
+.bbox-card.critical::before,
+.bbox-card.critical::after {
+  border-color: var(--signal-red);
+}
+
+/* --- Stat cards ------------------------------------------------------------- */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--slate-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.stat-value.critical { color: var(--signal-red); }
+.stat-value.caution { color: var(--amber-500); }
+.stat-value.safe { color: var(--safe-green); }
+
+/* --- Badges ------------------------------------------------------------------ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+.badge.critical {
+  background: var(--signal-red-glow);
+  color: var(--signal-red);
+}
+
+.badge.caution {
+  background: var(--amber-glow);
+  color: var(--amber-500);
+}
+
+.badge.safe {
+  background: rgba(79, 174, 122, 0.15);
+  color: var(--safe-green);
+}
+
+.badge .pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge .pulse { animation: none; }
+}
+
+/* --- Tables ------------------------------------------------------------------- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--slate-400);
+  padding: 10px 12px;
+  border-bottom: var(--border);
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--asphalt-800);
+  font-family: var(--font-mono);
+}
+
+tr:hover td {
+  background: var(--asphalt-800);
+}
+
+/* --- Forms / buttons ------------------------------------------------------------ */
+
+button, input, select {
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+
+.btn {
+  background: var(--amber-500);
+  color: var(--asphalt-950);
+  border: none;
+  border-radius: var(--radius);
+  padding: 9px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.btn:hover {
+  background: var(--amber-400);
+}
+
+.btn.secondary {
+  background: transparent;
+  color: var(--fog-50);
+  border: var(--border);
+}
+
+.btn.secondary:hover {
+  background: var(--asphalt-800);
+}
+
+.input {
+  background: var(--asphalt-800);
+  border: var(--border);
+  border-radius: var(--radius);
+  color: var(--fog-50);
+  padding: 9px 12px;
+  width: 100%;
+}
+
+.input:focus, .btn:focus-visible {
+  outline: 2px solid var(--amber-500);
+  outline-offset: 1px;
+}
+
+.login-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--asphalt-950);
+}
+
+.login-card {
+  width: 360px;
+  padding: 32px;
+}
+
+.login-card .stat-label {
+  margin-bottom: 20px;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--slate-400);
+  margin-bottom: 6px;
+}
+
+.error-text {
+  color: var(--signal-red);
+  font-size: 12px;
+  margin-top: 8px;
+}

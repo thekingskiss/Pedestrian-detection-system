@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Command docker -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Command psql -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Command redis-cli -ErrorAction SilentlyContinue)",
+      "PowerShell(python --version)",
+      "PowerShell(pip --version)",
+      "Bash(py -0p)",
+      "Bash(py -3.12 --version)",
+      "Bash(py -3.11 --version)",
+      "Bash(where python3.12)",
+      "Bash(where python3.11)"
+    ]
+  }
+}

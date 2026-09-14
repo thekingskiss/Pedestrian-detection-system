@@ -1,0 +1,7 @@
+path: C:/Users/patie/Documents/SORT OUT COURSES/Summer school/CS308/pds/backend/ml_training/dataset
+train: images/train
+val: images/val
+test: images/test
+names:
+  0: person
+  1: person-like

@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.env
+node_modules/
+dist/
+*.egg-info/
+.venv/
+
+backend/ml_training/dataset/images/
+backend/ml_training/dataset/labels/
+backend/ml_training/runs/
+Train/
+Val/
+Test/
+*.pt
