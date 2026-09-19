@@ -1,30 +1,31 @@
-version: "3.9"
-name: pedespi
-
 services:
+
   postgres:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: pds_user
       POSTGRES_PASSWORD: pds_pass
       POSTGRES_DB: pds_db
-    ports:
-      - "5432:5432"
     volumes:
-      - pds_pg_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pds_user -d pds_db"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   api:
     build: ./backend
+    init: true
     env_file: .env
     depends_on:
       postgres:
@@ -35,37 +36,41 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/app:/app/app
+      - ./pedespi_videos:/data/sample_clips
     command: >
       sh -c "alembic upgrade head &&
              uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
   worker:
     build: ./backend
+    init: true
     env_file: .env
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
       api:
         condition: service_started
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     volumes:
       - ./backend/app:/app/app
-      - pds_model_weights:/models
+      - ./backend/models:/models
+      - ./pedespi_videos:/data/sample_clips
     command: ["python", "-m", "app.worker"]
 
   frontend:
-    build: ./frontend
-    environment:
-      VITE_API_BASE_URL: http://localhost:8000/api/v1
-      VITE_WS_BASE_URL: ws://localhost:8000/api/v1/ws
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     ports:
       - "5173:5173"
-    volumes:
-      - ./frontend/src:/app/src
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     depends_on:
       - api
 
 volumes:
-  pds_pg_data:
-  pds_model_weights:
+  postgres_data:

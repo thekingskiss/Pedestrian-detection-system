@@ -23,9 +23,10 @@ class Frame:
 
 
 class VideoCaptureService:
-    def __init__(self, source_uri: str, target_fps: int = 15):
+    def __init__(self, source_uri: str, target_fps: int = 15, loop: bool = False):
         self.source_uri = source_uri
         self.target_fps = target_fps
+        self.loop = loop
         self._cap: cv2.VideoCapture | None = None
 
     def open(self) -> None:
@@ -54,6 +55,10 @@ class VideoCaptureService:
         while True:
             ok, image = self._cap.read()
             if not ok:
+                if self.loop:
+                    self._cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                    index = 0
+                    continue
                 break  # end of file, or transient camera-feed interruption (NFR-03)
 
             if index % stride == 0:

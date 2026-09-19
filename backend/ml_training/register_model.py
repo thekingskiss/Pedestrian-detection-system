@@ -5,7 +5,7 @@ activates it, so the running API picks it up on its next
 get_active_detector() call (see app/ml/model_registry.py).
 
 Run: python ml_training/evaluate.py   # note the printed metrics dict
-     python ml_training/register_model.py --map50 0.xx --map50-95 0.xx --latency-ms 0.xx --fps 0.xx
+     python ml_training/l.py --map50 0.xx --map50-95 0.xx --latency-ms 0.xx --fps 0.xx
 """
 import argparse
 
@@ -27,7 +27,7 @@ def main() -> None:
 
         version = ModelVersion(
             name="yolov8n-pedestrian-v2",
-            weights_path="./models/yolov8n-pedestrian-v2.pt",
+            weights_path="/models/yolov8n-pedestrian-v2.pt",
             trained_on="Train/Test/Val pedestrian dataset (Pascal VOC, person + person-like), "
             "fine-tuned from COCO-pretrained yolov8n.pt",
             map50=args.map50,

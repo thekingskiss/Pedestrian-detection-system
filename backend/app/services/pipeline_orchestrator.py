@@ -44,7 +44,11 @@ class CameraPipeline:
         self.zones = zones
         self.db = db
 
-        self.capture = VideoCaptureService(camera.source_uri, target_fps=camera.target_fps)
+        self.capture = VideoCaptureService(
+    camera.source_uri,
+    target_fps=camera.target_fps,
+    loop=(camera.source_type == "file"),
+)
         self.preprocessor = FramePreprocessor()
         self.detector = get_active_detector(db)
         self.tracker = GreedyIouTracker()

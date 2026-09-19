@@ -15,13 +15,15 @@ export function setToken(token) {
   else localStorage.removeItem("pds_token");
 }
 
-async function request(path, { method = "GET", body, form } = {}) {
+async function request(path, { method = "GET", body, form, file } = {}) {
   const headers = {};
   const token = getToken();
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
   let payload = body;
-  if (form) {
+  if (file) {
+    payload = file; // FormData — browser sets the multipart Content-Type + boundary itself
+  } else if (form) {
     payload = new URLSearchParams(form);
     headers["Content-Type"] = "application/x-www-form-urlencoded";
   } else if (body) {
@@ -40,13 +42,16 @@ async function request(path, { method = "GET", body, form } = {}) {
 
 export const api = {
   login: (email, password) => request("/auth/login", { method: "POST", form: { username: email, password } }),
+
+  register: (email, password) => request("/auth/register", { method: "POST", body: { email, password } }),
+
   me: () => request("/auth/me"),
 
   dashboardSummary: (hours = 24) => request(`/dashboard/summary?hours=${hours}`),
 
   listCameras: () => request("/cameras/"),
   createCamera: (payload) => request("/cameras/", { method: "POST", body: payload }),
-
+  uploadCameraVideo: (cameraId, formData) => request(`/cameras/${cameraId}/video`, { method: "POST", file: formData }),
   listZones: (cameraId) => request(`/zones/${cameraId ? `?camera_id=${cameraId}` : ""}`),
   createZone: (payload) => request("/zones/", { method: "POST", body: payload }),
 

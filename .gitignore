@@ -6,6 +6,9 @@ dist/
 *.egg-info/
 .venv/
 
+# Local/demo video footage
+pedespi_videos/
+
 backend/ml_training/dataset/images/
 backend/ml_training/dataset/labels/
 backend/ml_training/runs/
@@ -13,3 +16,4 @@ Train/
 Val/
 Test/
 *.pt
+

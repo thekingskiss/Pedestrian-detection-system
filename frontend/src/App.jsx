@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Sidebar from "./components/Sidebar.jsx";
 import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import LiveFeed from "./pages/LiveFeed.jsx";
 import Alerts from "./pages/Alerts.jsx";
@@ -10,7 +11,7 @@ import Users from "./pages/Users.jsx";
 import { api } from "./api/client.js";
 
 function useAuthedUser() {
-  const [user, setUser] = useState(undefined); // undefined = loading, null = anonymous
+  const [user, setUser] = useState(undefined);
   useEffect(() => {
     api
       .me()
@@ -22,16 +23,26 @@ function useAuthedUser() {
 
 export default function App() {
   const user = useAuthedUser();
+  const [showRegister, setShowRegister] = useState(false);
 
   if (user === undefined) {
     return <div className="login-shell"><span className="mono" style={{ color: "var(--slate-400)" }}>Loading…</span></div>;
   }
 
   if (user === null) {
+    if (showRegister) {
+      return (
+        <Register 
+          onRegistered={() => window.location.reload()} 
+          switchToLogin={() => setShowRegister(false)} 
+        />
+      );
+    }
     return (
-      <Routes>
-        <Route path="*" element={<Login onLoggedIn={() => window.location.reload()} />} />
-      </Routes>
+      <Login 
+        onLoggedIn={() => window.location.reload()} 
+        switchToRegister={() => setShowRegister(true)} 
+      />
     );
   }
 
