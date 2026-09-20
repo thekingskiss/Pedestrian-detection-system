@@ -17,8 +17,8 @@ from app.ml.yolo_wrapper import Detection, iou
 class Track:
     track_id: int
     bbox: Detection
-    age: int = 0  # frames since last matched
-    occluded: bool = False  # not matched to a detection in the current frame
+    age: int = 0
+    occluded: bool = False
     history: list[Detection] = field(default_factory=list)
 
 

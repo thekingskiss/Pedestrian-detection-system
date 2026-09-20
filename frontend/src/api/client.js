@@ -49,10 +49,53 @@ export const api = {
 
   dashboardSummary: (hours = 24) => request(`/dashboard/summary?hours=${hours}`),
 
-  listCameras: () => request("/cameras/"),
-  createCamera: (payload) => request("/cameras/", { method: "POST", body: payload }),
-  uploadCameraVideo: (cameraId, formData) => request(`/cameras/${cameraId}/video`, { method: "POST", file: formData }),
-  listZones: (cameraId) => request(`/zones/${cameraId ? `?camera_id=${cameraId}` : ""}`),
+    listCameras: () => request("/cameras/"),
+
+  createCamera: (payload) =>
+    request("/cameras/", {
+      method: "POST",
+      body: payload,
+    }),
+
+  uploadCameraVideo: (cameraId, formData) =>
+    request(`/cameras/${cameraId}/video`, {
+      method: "POST",
+      file: formData,
+    }),
+
+  getCameraVideoBlob: async (cameraId) => {
+    const token = getToken();
+    const headers = {};
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(
+      `${API_BASE}/cameras/${cameraId}/video`,
+      {
+        method: "GET",
+        headers,
+      }
+    );
+
+    if (!res.ok) {
+      const detail = await res.json().catch(() => ({}));
+
+      throw new Error(
+        detail.detail ||
+          `Unable to load video: ${res.status}`
+      );
+    }
+
+    return res.blob();
+  },
+
+  listZones: (cameraId) =>
+    request(
+      `/zones/${cameraId ? `?camera_id=${cameraId}` : ""}`
+    ),
+
   createZone: (payload) => request("/zones/", { method: "POST", body: payload }),
 
   listDetections: (params = {}) => {

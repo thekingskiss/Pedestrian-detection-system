@@ -1,20 +1,11 @@
 """
 This module is the single boundary between "our system" and "the trained
-YOLO model" (Section 7.2 / 7.3 of the write-up). Everything upstream and
-downstream of `YoloPedestrianDetector.predict()` is real, deployable code;
-this file's forward pass is a STUB because this sandbox has no GPU, no
-`ultralytics` package installed, and no access to pretrained/fine-tuned
-weight files.
+YOLO model" (Section 7.2 / 7.3 of the write-up).
 
-To make this real:
-    pip install ultralytics
-    from ultralytics import YOLO
-    self._model = YOLO(weights_path)
-    results = self._model.predict(image, conf=confidence_threshold, classes=[0])  # class 0 = person (COCO)
-
-The rest of the codebase only depends on the `Detection` dataclass shape
-below, so swapping the stub for a real ultralytics call requires no changes
-anywhere else in the pipeline.
+`YoloPedestrianDetector.predict()` calls a real, fine-tuned Ultralytics YOLO
+model (see ml_training/train.py and ml_training/register_model.py for how
+the active weights file gets produced and registered). The rest of the
+codebase only depends on the `Detection` dataclass shape below.
 """
 from dataclasses import dataclass
 
@@ -103,6 +94,10 @@ class YoloPedestrianDetector:
             self.load()
 
         results = self._model.predict(image, conf=confidence_threshold, verbose=False)[0]
+        print(
+            f"DEBUG: raw model output — {len(results.boxes)} boxes at conf>={confidence_threshold}",
+            flush=True,
+        )
         return [
             Detection(
                 *box.xyxyn[0].tolist(),
