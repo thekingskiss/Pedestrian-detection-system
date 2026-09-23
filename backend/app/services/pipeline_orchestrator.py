@@ -142,6 +142,8 @@ class CameraPipeline:
                         else None
                     ),
                     track_id=track.track_id,
+                    frame_index=frame.index,
+                    source_timestamp=frame.timestamp,
                     confidence=track.bbox.confidence,
                     bbox={
                         "x1": track.bbox.x1,

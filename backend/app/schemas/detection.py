@@ -12,12 +12,17 @@ class BBox(BaseModel):
 
 
 class DetectionEventOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        protected_namespaces=(),
+    )
 
     id: uuid.UUID
     camera_id: uuid.UUID
     zone_id: uuid.UUID | None
     track_id: int
+    frame_index: int
+    source_timestamp: float
     timestamp: datetime
     confidence: float
     bbox: dict
@@ -33,5 +38,7 @@ class DetectionEventFilter(BaseModel):
     classification: str | None = None
     start: datetime | None = None
     end: datetime | None = None
+    source_start: float | None = None
+    source_end: float | None = None
     limit: int = 100
     offset: int = 0

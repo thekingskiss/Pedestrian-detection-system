@@ -19,6 +19,7 @@ import signal
 from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.db.session import SessionLocal
+import app.db.base  # noqa: F401 — register all ORM models with Base.metadata
 from app.services.pipeline_orchestrator import run_all_active_cameras
 
 logger = logging.getLogger(__name__)

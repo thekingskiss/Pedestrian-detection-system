@@ -10,7 +10,8 @@ router = APIRouter()
 
 @router.get("/", response_model=list[DetectionEventOut])
 def list_detections(
-    filters: DetectionEventFilter = Depends(), db: Session = Depends(get_db)
+    filters: DetectionEventFilter = Depends(),
+    db: Session = Depends(get_db),
 ) -> list[DetectionEvent]:
     """
     Read path for FR-09 logged events / FR-10 dashboard drill-down.
@@ -21,13 +22,34 @@ def list_detections(
     query = db.query(DetectionEvent)
 
     if filters.camera_id:
-        query = query.filter(DetectionEvent.camera_id == filters.camera_id)
+        query = query.filter(
+            DetectionEvent.camera_id == filters.camera_id
+        )
+
     if filters.classification:
-        query = query.filter(DetectionEvent.classification == filters.classification)
+        query = query.filter(
+            DetectionEvent.classification == filters.classification
+        )
+
     if filters.start:
-        query = query.filter(DetectionEvent.timestamp >= filters.start)
+        query = query.filter(
+            DetectionEvent.timestamp >= filters.start
+        )
+
     if filters.end:
-        query = query.filter(DetectionEvent.timestamp <= filters.end)
+        query = query.filter(
+            DetectionEvent.timestamp <= filters.end
+        )
+
+    if filters.source_start is not None:
+        query = query.filter(
+            DetectionEvent.source_timestamp >= filters.source_start
+        )
+
+    if filters.source_end is not None:
+        query = query.filter(
+            DetectionEvent.source_timestamp <= filters.source_end
+        )
 
     return (
         query.order_by(DetectionEvent.timestamp.desc())
